@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JR-VENDAS</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f5f7;
+    color: #222;
+}
+
+header {
+    background: #111827;
+    color: white;
+    padding: 18px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 26px;
+}
+
+header p {
+    margin-top: 5px;
+    color: #cbd5e1;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 15px;
+}
+
+.menu {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-bottom: 15px;
+}
+
+.menu button {
+    border: none;
+    background: #e5e7eb;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.menu button.active {
+    background: #2563eb;
+    color: white;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.card {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.btn {
+    width: 100%;
+    border: none;
+    padding: 13px;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-success {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-gray {
+    background: #6b7280;
+    color: white;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.stat {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+
+.stat strong {
+    display: block;
+    font-size: 24px;
+    margin-top: 5px;
+}
+
+.product {
+    border: 1px solid #e5e7eb;
+    padding: 13px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.product-title {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.product-info {
+    margin-top: 5px;
+    color: #555;
+}
+
+.product-actions {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.product-actions button {
+    flex: 1;
+    border: none;
+    padding: 9px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    gap: 10px;
+}
+
+.qty {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.qty button {
+    border: none;
+    background: #e5e7eb;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 18px;
+}
+
+.total {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+    margin-top: 15px;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 25px;
+}
+
+.sale {
+    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+}
+
+.camera-box {
+    background: #111827;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+@media (min-width: 700px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>JR-VENDAS</h1>
+    <p>Sistema de vendas e controle de estoque</p>
+</header>
+
+<div class="container">
+
+    <div class="menu">
+        <button class="active" onclick="mostrar('inicio', this)">🏠 Início</button>
+        <button onclick="mostrar('produtos', this)">📦 Produtos</button>
+        <button onclick="mostrar('venda', this)">🛒 Venda</button>
+        <button onclick="mostrar('historico', this)">🧾 Histórico</button>
+    </div>
+
+    <!-- INÍCIO -->
+    <section id="inicio" class="section active">
+
+        <div class="grid">
+
+            <div class="stat">
+                📦 Produtos
+                <strong id="totalProdutos">0</strong>
+            </div>
+
+            <div class="stat">
+                📊 Estoque
+                <strong id="totalEstoque">0</strong>
+            </div>
+
+            <div class="stat">
+                💰 Vendas
+                <strong id="totalVendas">R$ 0,00</strong>
+            </div>
+
+            <div class="stat">
+                🧾 Pedidos
+                <strong id="numeroVendas">0</strong>
+            </div>
+
+        </div>
+
+        <div class="card" style="margin-top:15px;">
+            <h2>Bem-vindo ao JR-VENDAS</h2>
+            <p>
+                Cadastre os produtos, controle o estoque e registre as vendas.
+            </p>
+        </div>
+
+    </section>
+
+    <!-- PRODUTOS -->
+    <section id="produtos" class="section">
+
+        <div class="card">
+
+            <h2>➕ Cadastrar produto</h2>
+
+            <input id="nomeProduto" placeholder="Nome do produto">
+
+            <input id="codigoProduto" placeholder="Código de barras">
+
+            <button class="btn btn-gray" onclick="abrirCamera()">
+                📷 Ler código de barras
+            </button>
+
+            <div id="cameraArea" class="camera-box" style="display:none;">
+                <p>Aponte a câmera para o código de barras</p>
+                <video id="video" autoplay></video>
+                <button class="btn btn-danger" onclick="fecharCamera()">
+                    Fechar câmera
+                </button>
+            </div>
+
+            <input id="precoProduto" type="number" step="0.01" placeholder="Preço de venda">
+
+            <input id="estoqueProduto" type="number" placeholder="Quantidade em estoque">
+
+            <button class="btn btn-primary" onclick="cadastrarProduto()">
+                Cadastrar produto
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>📦 Produtos cadastrados</h2>
+
+            <input
+                id="buscaProduto"
+                placeholder="🔎 Buscar produto..."
+                oninput="listarProdutos()"
+            >
+
+            <div id="listaProdutos"></div>
+
+        </div>
+
+    </section>
+
+    <!-- VENDA -->
+    <section id="venda" class="section">
+
+        <div class="card">
+
+            <h2>🛒 Nova venda</h2>
+
+            <input
+                id="buscaVenda"
+                placeholder="🔎 Procurar produto..."
+                oninput="listarProdutosVenda()"
+            >
+
+            <div id="produtosVenda"></div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>🛒 Carrinho</h2>
+
+            <div id="carrinho"></div>
+
+            <div class="total">
+                Total: <span id="totalCarrinho">R$ 0,00</span>
+            </div>
+
+            <button class="btn btn-success" onclick="finalizarVenda()">
+                ✅ Finalizar venda
+            </button>
+
+            <button class="btn btn-danger" onclick="limparCarrinho()">
+                🗑️ Limpar carrinho
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section id="historico" class="section">
+
+        <div class="card">
+
+            <h2>🧾 Histórico de vendas</h2>
+
+            <div id="listaHistorico"></div>
+
+            <button class="btn btn-danger" onclick="limparHistorico()">
+                Apagar histórico
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+
+let produtos = JSON.parse(localStorage.getItem("jr_produtos")) || [];
+let vendas = JSON.parse(localStorage.getItem("jr_vendas")) || [];
+let carrinho = [];
+
+function salvar() {
+    localStorage.setItem("jr_produtos", JSON.stringify(produtos));
+    localStorage.setItem("jr_vendas", JSON.stringify(vendas));
+}
+
+function dinheiro(valor) {
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function mostrar(secao, botao) {
+
+    document.querySelectorAll(".section").forEach(s => {
+        s.classList.remove("active");
+    });
+
+    document.getElementById(secao).classList.add("active");
+
+    document.querySelectorAll(".menu button").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    botao.classList.add("active");
+
+    atualizarDashboard();
+
+    if (secao === "produtos") listarProdutos();
+    if (secao === "venda") listarProdutosVenda();
+    if (secao === "historico") listarHistorico();
+}
+
+function cadastrarProduto() {
+
+    const nome = document.getElementById("nomeProduto").value.trim();
+    const codigo = document.getElementById("codigoProduto").value.trim();
+    const preco = Number(document.getElementById("precoProduto").value);
+    const estoque = Number(document.getElementById("estoqueProduto").value);
+
+    if (!nome) {
+        alert("Digite o nome do produto.");
+        return;
+    }
+
+    if (!preco || preco <= 0) {
+        alert("Digite um preço válido.");
+        return;
+    }
+
+    if (estoque < 0 || isNaN(estoque)) {
+        alert("Digite um estoque válido.");
+        return;
+    }
+
+    produtos.push({
+        id: Date.now(),
+        nome: nome,
+        codigo: codigo,
+        preco: preco,
+        estoque: estoque
+    });
+
+    salvar();
+
+    document.getElementById("nomeProduto").value = "";
+    document.getElementById("codigoProduto").value = "";
+    document.getElementById("precoProduto").value = "";
+    document.getElementById("estoqueProduto").value = "";
+
+    listarProdutos();
+    atualizarDashboard();
+
+    alert("Produto cadastrado com sucesso!");
+}
+
+function listarProdutos() {
+
+    const lista = document.getElementById("listaProdutos");
+    const busca = document.getElementById("buscaProduto").value.toLowerCase();
+
+    const encontrados = produtos.filter(p =>
+        p.nome.toLowerCase().includes(busca) ||
+        p.codigo.toLowerCase().includes(busca)
+    );
+
+    if (encontrados.length === 0) {
+        lista.innerHTML = '<div class="empty">Nenhum produto encontrado.</div>';
+        return;
+    }
+
+    lista.innerHTML = encontrados.map(p => `
+
+        <div class="product">
+
+            <div class="product-title">
+                ${p.nome}
+            </div>
+
+            <div class="product-info">
+                Código: ${p.codigo || "Não informado"}<br>
+                Preço: ${dinheiro(p.preco)}<br>
+                Estoque: ${p.estoque}
+            </div>
+
+            <div class="product-actions">
+
+                <button
+                    style="background:#fee2e2;color:#991b1b"
+                    onclick="excluirProduto(${p.id})">
+                    Excluir
+                </button>
+
+                <button
+                    style="background:#dbeafe;color:#1e40af"
+                    onclick="editarEstoque(${p.id})">
+                    Estoque
+                </button>
+
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+function excluirProduto(id) {
+
+    const confirmar = confirm("Deseja realmente excluir este produto?");
+
+    if (!confirmar) return;
+
+    produtos = produtos.filter(p => p.id !== id);
+
+    salvar();
+    listarProdutos();
+    atualizarDashboard();
+}
+
+function editarEstoque(id) {
+
+    const produto = produtos.find(p => p.id === id);
+
+    if (!produto) return;
+
+    const novoEstoque = prompt(
+        "Digite a nova quantidade em estoque:",
+        produto.estoque
+    );
+
+    if (novoEstoque === null) return;
+
+    const quantidade = Number(novoEstoque);
+
+    if (isNaN(quantidade) || quantidade < 0) {
+        alert("Quantidade inválida.");
+        return;
+    }
+
+    produto.estoque = quantidade;
+
+    salvar();
+    listarProdutos();
+    atualizarDashboard();
+}
+
+function listarProdutosVenda() {
+
+    const lista = document.getElementById("produtosVenda");
+    const busca = document.getElementById("buscaVenda").value.toLowerCase();
+
+    const encontrados = produtos.filter(p =>
+        p.nome.toLowerCase().includes(busca) ||
+        p.codigo.toLowerCase().includes(busca)
+    );
+
+    if (encontrados.length === 0) {
+        lista.innerHTML =
+            '<div class="empty">Nenhum produto encontrado.</div>';
+        return;
+    }
+
+    lista.innerHTML = encontrados.map(p => `
+
+        <div class="product">
+
+            <div class="product-title">${p.nome}</div>
+
+            <div class="product-info">
+                ${dinheiro(p.preco)} |
+                Estoque: ${p.estoque}
+            </div>
+
+            <button
+                class="btn btn-primary"
+                onclick="adicionarCarrinho(${p.id})"
+                ${p.estoque <= 0 ? "disabled" : ""}>
+                ${p.estoque > 0 ? "Adicionar à venda" : "Sem estoque"}
+            </button>
+
+        </div>
+
+    `).join("");
+}
+
+function adicionarCarrinho(id) {
+
+    const produto = produtos.find(p => p.id === id);
+
+    if (!produto || produto.estoque <= 0) return;
+
+    const item = carrinho.find(i => i.id === id);
+
+    if (item) {
+
+        if (item.quantidade < produto.estoque) {
+            item.quantidade++;
+        } else {
+            alert("Quantidade maior que o estoque.");
+        }
+
+    } else {
+
+        carrinho.push({
+            id: produto.id,
+            nome: produto.nome,
+            preco: produto.preco,
+            quantidade: 1
+        });
+
+    }
+
+    atualizarCarrinho();
+}
+
+function alterarQuantidade(id, valor) {
+
+    const item = carrinho.find(i => i.id === id);
+
+    if (!item) return;
+
+    const produto = produtos.find(p => p.id === id);
+
+    item.quantidade += valor;
+
+    if (item.quantidade <= 0) {
+        carrinho = carrinho.filter(i => i.id !== id);
+    }
+
+    if (produto && item.quantidade > produto.estoque) {
+        item.quantidade = produto.estoque;
+        alert("Você atingiu o limite do estoque.");
+    }
+
+    atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+
+    const area = document.getElementById("carrinho");
+
+    if (carrinho.length === 0) {
+        area.innerHTML =
+            '<div class="empty">Carrinho vazio.</div>';
+
+        document.getElementById("totalCarrinho").textContent =
+            dinheiro(0);
+
+        return;
+    }
+
+    let total = 0;
+
+    area.innerHTML = carrinho.map(item => {
+
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+
+        return `
+
+            <div class="cart-item">
+
+                <div>
+                    <strong>${item.nome}</strong><br>
+                    ${dinheiro(item.preco)} cada
+                </div>
+
+                <div class="qty">
+
+                    <button onclick="alterarQuantidade(${item.id}, -1)">
+                        -
+                    </button>
+
+                    <strong>${item.quantidade}</strong>
+
+                    <button onclick="alterarQuantidade(${item.id}, 1)">
+                        +
+                    </button>
+
+                </div>
+
+                <strong>
+                    ${dinheiro(subtotal)}
+                </strong>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+    document.getElementById("totalCarrinho").textContent =
+        dinheiro(total);
+}
+
+function limparCarrinho() {
+
+    carrinho = [];
+    atualizarCarrinho();
+}
+
+function finalizarVenda() {
+
+    if (carrinho.length === 0) {
+        alert("O carrinho está vazio.");
+        return;
+    }
+
+    let total = 0;
+
+    carrinho.forEach(item => {
+
+        const produto = produtos.find(p => p.id === item.id);
+
+        if (produto) {
+            produto.estoque -= item.quantidade;
+        }
+
+        total += item.preco * item.quantidade;
+    });
+
+    const venda = {
+        id: Date.now(),
+        data: new Date().toLocaleString("pt-BR"),
+        itens: [...carrinho],
+        total: total
+    };
+
+    vendas.unshift(venda);
+
+    carrinho = [];
+
+    salvar();
+
+    atualizarCarrinho();
+    atualizarDashboard();
+    listarProdutosVenda();
+
+    alert(
+        "Venda finalizada com sucesso!\n\nTotal: " +
+        dinheiro(total)
+    );
+}
+
+function listarHistorico() {
+
+    const area = document.getElementById("listaHistorico");
+
+    if (vendas.length === 0) {
+        area.innerHTML =
+            '<div class="empty">Nenhuma venda registrada.</div>';
+        return;
+    }
+
+    area.innerHTML = vendas.map(venda => `
+
+        <div class="sale">
+
+            <strong>Venda #${venda.id}</strong><br>
+
+            Data: ${venda.data}<br>
+
+            Itens: ${venda.itens.reduce(
+                (soma, item) => soma + item.quantidade,
+                0
+            )}
+
+            <br>
+
+            <strong>
+                Total: ${dinheiro(venda.total)}
+            </strong>
+
+        </div>
+
+    `).join("");
+}
+
+function limparHistorico() {
+
+    if (!confirm("Deseja apagar todo o histórico de vendas?")) {
+        return;
+    }
+
+    vendas = [];
+
+    salvar();
+    listarHistorico();
+    atualizarDashboard();
+}
+
+function atualizarDashboard() {
+
+    const totalProdutos = produtos.length;
+
+    const totalEstoque = produtos.reduce(
+        (total, produto) => total + Number(produto.estoque),
+        0
+    );
+
+    const totalVendas = vendas.reduce(
+        (total, venda) => total + venda.total,
+        0
+    );
+
+    document.getElementById("totalProdutos").textContent =
+        totalProdutos;
+
+    document.getElementById("totalEstoque").textContent =
+        totalEstoque;
+
+    document.getElementById("totalVendas").textContent =
+        dinheiro(totalVendas);
+
+    document.getElementById("numeroVendas").textContent =
+        vendas.length;
+}
+
+
+/* =========================
+   CÂMERA / CÓDIGO DE BARRAS
+========================= */
+
+let stream = null;
+
+async function abrirCamera() {
+
+    const area = document.getElementById("cameraArea");
+
+    try {
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment"
+            }
+        });
+
+        document.getElementById("video").srcObject = stream;
+
+        area.style.display = "block";
+
+        iniciarLeitura();
+
+    } catch (erro) {
+
+        alert(
+            "Não foi possível acessar a câmera. " +
+            "Verifique a permissão do navegador."
+        );
+
+    }
+}
+
+function fecharCamera() {
+
+    if (stream) {
+
+        stream.getTracks().forEach(track => track.stop());
+
+        stream = null;
+    }
+
+    document.getElementById("cameraArea").style.display = "none";
+}
+
+async function iniciarLeitura() {
+
+    if (!("BarcodeDetector" in window)) {
+
+        return;
+    }
+
+    const detector = new BarcodeDetector({
+        formats: [
+            "ean_13",
+            "ean_8",
+            "code_128",
+            "upc_a",
+            "upc_e"
+        ]
+    });
+
+    const video = document.getElementById("video");
+
+    async function procurar() {
+
+        if (!stream) return;
+
+        try {
+
+            const codigos = await detector.detect(video);
+
+            if (codigos.length > 0) {
+
+                const codigo = codigos[0].rawValue;
+
+                document.getElementById("codigoProduto").value =
+                    codigo;
+
+                fecharCamera();
+
+                alert(
+                    "Código de barras encontrado:\n" +
+                    codigo
+                );
+
+                return;
+            }
+
+        } catch (erro) {}
+
+        requestAnimationFrame(procurar);
+    }
+
+    procurar();
+}
+
+
+/* =========================
+   INICIALIZAÇÃO
+========================= */
+
+atualizarDashboard();
+listarProdutos();
+atualizarCarrinho();
+
+</script>
+
+</body>
+          </html>
